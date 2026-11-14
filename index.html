@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBSCURE ANONYMOUS - Send Anonymous Messages</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#0a0a0f;color:white;min-height:100vh;display:flex;justify-content:center;padding:20px}
+.box{width:100%;max-width:420px;text-align:center;padding-top:20px}
+.logo{font-size:42px;font-weight:900;letter-spacing:3px;background:linear-gradient(90deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo2{font-size:18px;letter-spacing:6px;color:#ec4899;font-weight:bold}
+.sub{color:#aaa;margin:10px 0 25px}
+.card{background:#15151f;border:1px solid #2a2a3a;border-radius:20px;padding:20px;text-align:left}
+input,textarea{width:100%;background:#0a0a0f;border:1px solid #333;color:white;border-radius:12px;padding:13px;font-size:15px;outline:none;margin-top:10px}
+textarea{height:110px;resize:none}
+button{width:100%;background:linear-gradient(90deg,#a855f7,#ec4899);color:white;border:none;padding:15px;border-radius:50px;font-size:16px;font-weight:bold;margin-top:15px;cursor:pointer}
+.linkbox{background:#0a0a0f;border:1px dashed #a855f7;padding:12px;border-radius:12px;margin-top:15px;word-break:break-all;font-size:14px}
+.msg{background:#0a0a0f;border:1px solid #333;padding:12px;border-radius:12px;margin-top:10px;text-align:left}
+.small{font-size:13px;color:#aaa;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="box">
+<div class="logo">OBSCURE</div>
+<div class="logo2">ANONYMOUS</div>
+<p class="sub" id="subtitle">Send anonymous messages. No one will know.</p>
+<div id="home" class="card">
+<h3>🔮 Get Your OBSCURE Link</h3>
+<p class="small">Create your username, get your link, share am make people yarn you anonymously.</p>
+<input id="username" placeholder="e.g. darkloner" />
+<button onclick="createLink()">Create My Link</button>
+<div id="myLink" style="display:none">
+<div class="linkbox" id="linkText"></div>
+<button onclick="copyLink()">Copy Link</button>
+<button onclick="goInbox()" style="background:#222">Open My Inbox 📥</button>
+<p class="small">Share this link for WhatsApp Status, TikTok Bio, IG Bio!</p>
+</div>
+</div>
+<div id="sendPage" class="card" style="display:none">
+<h3 id="sendTitle">💬 Send Anonymous Message</h3>
+<textarea id="msgInput" placeholder="Type your honest message here..."></textarea>
+<button onclick="sendMsg()">Send Anonymously</button>
+<p class="small" id="sentMsg" style="display:none;color:#4ade80">✅ Message Sent! Your identity remains hidden.</p>
+<button onclick="showHome()" style="background:#222">Create My Own Link</button>
+</div>
+<div id="inboxPage" class="card" style="display:none">
+<h3>📥 My Inbox</h3>
+<p class="small" id="inboxUser"></p>
+<div id="inboxList"></div>
+<button onclick="showHome()" style="background:#222">Back Home</button>
+</div>
+</div>
+<script>
+const params = new URLSearchParams(window.location.search);
+const toUser = params.get('u');
+if(toUser){
+  document.getElementById('home').style.display='none';
+  document.getElementById('sendPage').style.display='block';
+  document.getElementById('sendTitle').innerText = '💬 Send Anonymous Message to @' + toUser;
+  document.getElementById('subtitle').innerText = 'Send to @' + toUser + ' anonymously.';
+}
+function createLink(){
+  let u = document.getElementById('username').value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
+  if(!u){ alert('Type username first'); return; }
+  localStorage.setItem('obscure_my_user', u);
+  let base = window.location.href.split('?')[0];
+  let link = base + '?u=' + u;
+  document.getElementById('linkText').innerText = link;
+  document.getElementById('myLink').style.display='block';
+}
+function copyLink(){ navigator.clipboard.writeText(document.getElementById('linkText').innerText); alert('Link copied! Go share am!'); }
+function sendMsg(){
+  let v = document.getElementById('msgInput').value.trim();
+  if(!v){ alert('Type message first'); return; }
+  let key = 'obscure_inbox_' + toUser;
+  let arr = JSON.parse(localStorage.getItem(key) || '[]');
+  arr.unshift({text:v, time: new Date().toLocaleString()});
+  localStorage.setItem(key, JSON.stringify(arr));
+  document.getElementById('msgInput').value='';
+  document.getElementById('sentMsg').style.display='block';
+}
+function goInbox(){ showInbox(); }
+function showInbox(){
+  let u = localStorage.getItem('ob

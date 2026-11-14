@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>OBSCURE ANONYMOUS</title>
-<style>body{background:#000;color:#fff;text-align:center;font-family:Arial;padding:20px}h1{color:#ec4899;font-size:40px}.card{background:#111827;padding:20px;border-radius:15px;max-width:400px;margin:auto}input,textarea{width:100%;padding:13px;margin:10px 0;border-radius:10px;border:1px solid #444;background:#000;color:#fff}button{width:100%;padding:14px;border:none;border-radius:999px;background:#ec4899;color:#fff;font-weight:bold}#link{word-break:break-all;background:#000;padding:10px;border:1px dashed #a855f7;border-radius:10px;display:none}</style>
+<style>body{background:#000;color:#fff;text-align:center;font-family:Arial;padding:20px}h1{color:#ec4899;font-size:40px}.card{background:#111827;padding:20px;border-radius:15px;max-width:400px;margin:auto}input,textarea{width:100%;padding:13px;margin:10px 0;border-radius:10px;border:1px solid #444;background:#000;color:#fff}button{width:100%;padding:14px;border:none;border-radius:999px;background:#ec4899;color:#fff;font-weight:bold}#link{word-break:break-all;background:#000;padding:10px;border:1px dashed #a855f7;border-radius:10px;display:none}.msg{background:#000;padding:12px;border-radius:10px;margin:10px 0;text-align:left;border-left:4px solid #ec4899}</style>
 </head><body>
 <h1>OBSCURE</h1><p>ANONYMOUS</p><p>Send anonymous messages. No one will know.</p>
 <div class="card" id="c1">
@@ -10,18 +10,29 @@
 <button onclick="go()">Create My Link</button>
 <div id="link"></div>
 <button onclick="copyL()" style="background:green;margin-top:10px">Copy My Link</button>
+<hr><button onclick="showInbox()" style="background:#7c3aed">📥 View My Messages</button>
 </div>
 <div class="card" id="c2" style="display:none">
 <h3 id="t">Send Anonymous Message</h3>
 <textarea id="m" placeholder="Type message..."></textarea>
 <button onclick="send()">Send Anonymously</button>
-<p id="ok" style="display:none;color:lime">Message sent!</p>
+<p id="ok" style="display:none;color:lime">Message sent! ✅</p>
+</div>
+<div class="card" id="c3" style="display:none">
+<h3>📥 My Inbox</h3>
+<input id="iu" placeholder="Enter your username to view">
+<button onclick="loadInbox()" style="background:#7c3aed">Load Messages</button>
+<div id="inbox"></div>
+<button onclick="backHome()" style="background:#333;margin-top:10px">Back</button>
 </div>
 <script>
-var link="";
-function go(){var u=document.getElementById('u').value.trim().toLowerCase();if(!u){alert('Enter username');return}link=location.origin+location.pathname+'?u='+u;var d=document.getElementById('link');d.style.display='block';d.innerText=link;alert('Link ready! Press Copy My Link');}
+var link="", curUser="";
+function go(){var u=document.getElementById('u').value.trim().toLowerCase();if(!u){alert('Enter username');return}link='https://deprince054-png.github.io/obscure-anonymous/?u='+u;var d=document.getElementById('link');d.style.display='block';d.innerText=link;alert('Link ready! Press Copy My Link');}
 function copyL(){if(!link)return;navigator.clipboard.writeText(link);alert('Copied!');}
 var p=new URLSearchParams(location.search).get('u');
-if(p){document.getElementById('c1').style.display='none';document.getElementById('c2').style.display='block';document.getElementById('t').innerText='Send to @'+p;}
-function send(){var t=document.getElementById('m').value;if(!t){alert('Type message');return}document.getElementById('m').value='';document.getElementById('ok').style.display='block';}
+if(p){curUser=p;document.getElementById('c1').style.display='none';document.getElementById('c2').style.display='block';document.getElementById('t').innerText='Send to @'+p;}
+function send(){var t=document.getElementById('m').value.trim();if(!t){alert('Type message');return}var key='obscure_'+curUser;var arr=JSON.parse(localStorage.getItem(key)||'[]');arr.unshift({text:t,time:new Date().toLocaleString()});localStorage.setItem(key,JSON.stringify(arr));document.getElementById('m').value='';document.getElementById('ok').style.display='block';}
+function showInbox(){document.getElementById('c1').style.display='none';document.getElementById('c3').style.display='block';}
+function loadInbox(){var u=document.getElementById('iu').value.trim().toLowerCase();if(!u){alert('Enter username');return}var arr=JSON.parse(localStorage.getItem('obscure_'+u)||'[]');var box=document.getElementById('inbox');if(!arr.length){box.innerHTML='<p>No messages yet. Share your link!</p>';return}box.innerHTML='<p><b>'+arr.length+' messages:</b></p>'+arr.map(function(x){return '<div class="msg">👻 '+x.text+'<br><small style="color:#888">'+x.time+'</small></div>'}).join('');}
+function backHome(){document.getElementById('c3').style.display='none';document.getElementById('c1').style.display='block';}
 </script></body></html>
